@@ -38,7 +38,6 @@ pub fn generate_signing_key_seed(seed &byte) SigningKey {
 	return res
 }
 
-
 pub fn (key VerifyKey) verify_string(s string) bool {
 	len := s.len - sign_len
 	buf := []byte{len: len}
@@ -57,14 +56,14 @@ pub fn (key SigningKey) sign_string(s string) string {
 	return unsafe { buf.vstring_with_len(buf_len) }
 }
 
-pub fn (key VerifyKey) verify(b []byte) bool {
+pub fn (key VerifyKey) verify(b []byte) (bool, []byte) {
 	len := b.len - sign_len
 	buf := []byte{len: len}
 	mut buf_len := 0
 	if C.crypto_sign_open(buf.data, &buf_len, b.data, b.len, key.public_key) != 0 {
-		return false
+		return false, buf
 	}
-	return true
+	return true, buf
 }
 
 pub fn (key SigningKey) sign(b []byte) []byte {
