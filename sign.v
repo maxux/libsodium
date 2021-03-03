@@ -4,13 +4,14 @@ const (
 	sign_len = 64
 )
 
-struct SigningKey {
+pub struct SigningKey {
 	secret_key [secret_key_size]byte
 pub:
 	verify_key VerifyKey
 }
 
-struct VerifyKey {
+pub struct VerifyKey {
+pub:
 	public_key [public_key_size]byte
 }
 
@@ -30,6 +31,13 @@ pub fn generate_signing_key() SigningKey {
 	C.crypto_sign_keypair(res.verify_key.public_key, res.secret_key)
 	return res
 }
+
+pub fn generate_signing_key_seed(seed &byte) SigningKey {
+	res := SigningKey{}
+	C.crypto_sign_seed_keypair(res.verify_key.public_key, res.secret_key, seed)
+	return res
+}
+
 
 pub fn (key VerifyKey) verify_string(s string) bool {
 	len := s.len - sign_len
